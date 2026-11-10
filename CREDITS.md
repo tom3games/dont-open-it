@@ -1,0 +1,35 @@
+- snd/bgm_lofi.mp3: Japanese Lofi HipHop Track / pickentcode / CC0
+- snd/amb_clock.mp3: File:Clock ticking.ogg / natalie / Public domain
+- snd/amb_crickets.mp3: Crickets Ambient Noise - loopable / Wolfgang_ / CC0
+- snd/notif1.mp3: File:Notification_Gravity_Sound.wav / Gravity Sound / CC BY 4.0
+- snd/notif2.mp3: File:Notification_2_Gravity_Sound.wav / Gravity Sound / CC BY 4.0
+- snd/notif3.mp3: File:Notification_4_Gravity_Sound.wav / Gravity Sound / CC BY 4.0
+- snd/notif4.mp3: File:Segnale_audio_di_arrivo_SMS.ogg (先頭) / Pracchia-78 / Public domain
+- snd/buzz1.mp3: File:Mobile_phone_interference.ogg (切り出し) / Ezwa / Public domain
+- snd/buzz2.mp3: File:Mobile_phone_interference.ogg (切り出し) / Ezwa / Public domain
+- snd/buzz3.mp3: File:Mobile_phone_interference.ogg (切り出し) / Ezwa / Public domain
+- snd/slap1.mp3: File:Smack (Gravity Sound).mp3 / Gravity Sound / CC BY 4.0
+- snd/slap2.mp3: File:Smack 2 (Gravity Sound).mp3 / Gravity Sound / CC BY 4.0
+- snd/slap3.mp3: File:Smack 5 (Gravity Sound).wav / Gravity Sound / CC BY 4.0
+- snd/ouch1.mp3: Little Grunts / crueltyinc / CC0
+- snd/ouch2.mp3: Little Grunts / crueltyinc / CC0
+- snd/ouch3.mp3: Little Grunts / crueltyinc / CC0
+- snd/write_loop.mp3: File:Writing with inkpen.ogg / stephan / Public domain
+- snd/spill.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/paper1.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/paper2.mp3: 100 CC0 SFX / rubberduck / CC0
+- snd/zoom.mp3: Interface Sounds / Kenney / CC0
+- snd/unzoom.mp3: Interface Sounds / Kenney / CC0
+- snd/click.mp3: Interface Sounds / Kenney / CC0
+- snd/alarm.mp3: File:Alarm Clock (Directory.Audio).mp3 / Yoo-toob-FX (https://directory.audio/authoritems/665-yoo-too / CC0
+- snd/rooster.mp3: File:Medium rooster crowing.ogg / alys / Public domain
+- snd/meow.mp3: Cat Purr & Meow / Kerzoven / CC0
+- snd/purr.mp3: Cat Purr & Meow / Kerzoven / CC0
+- snd/doorbell.mp3: File:Doorbell-cheap-dingdong.ogg / ? / Public domain
+- snd/cloth1.mp3: 50 RPG sound effects / Kenney / CC0
+- snd/cloth2.mp3: 50 RPG sound effects / Kenney / CC0
+- snd/j_good.mp3: 85 Short music jingles / Kenney / CC0
+- snd/j_mid.mp3: 85 Short music jingles / Kenney / CC0
+- snd/j_bad.mp3: 85 Short music jingles / Kenney / CC0
+- snd/j_real.mp3: 85 Short music jingles / Kenney / CC0
+- snd/amb_birds.mp3: File:Réveil_des_oiseaux.ogg (5-23秒) / Joseph Sardin / CC0

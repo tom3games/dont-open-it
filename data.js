@@ -1,0 +1,178 @@
+// その通知、開くな: 文言とデータ（日英）。通知・アプリ・店・人物は全部架空
+window.DN_DATA = (function () {
+  // アプリ。real=true は「トーク」（家族と友だちの連絡）だけ
+  const APPS = {
+    talk: { ja: 'トーク', en: 'Talk', c: '#1f9e8f', g: 'talk', real: true },
+    shop: { ja: 'ポチモール', en: 'PochiMall', c: '#f08a24', g: 'shop' },
+    sns: { ja: 'ミセタイ', en: 'ShowMe', c: '#d6457a', g: 'sns' },
+    live: { ja: 'おしライブ', en: 'IdolLive', c: '#7a4fd6', g: 'live' },
+    lot: { ja: 'くじ当番', en: 'LuckyDraw', c: '#d23b3b', g: 'lot' },
+    news: { ja: 'ニュース', en: 'News', c: '#3c6fd1', g: 'news' },
+    game: { ja: 'ドラゴン牧場', en: 'Dragon Ranch', c: '#4a8c2a', g: 'game' },
+    bbs: { ja: 'うわさ板', en: 'RumorBoard', c: '#5b5b66', g: 'bbs' },
+    love: { ja: 'あいかぎ', en: 'Lovekey', c: '#e0567a', g: 'love' },
+    sys: { ja: '設定', en: 'Settings', c: '#8a8f99', g: 'sys' },
+    fortune: { ja: '占いの館', en: 'Fortune House', c: '#a0522d', g: 'fortune' },
+    flea: { ja: 'メルフリ', en: 'FleaGo', c: '#e04848', g: 'flea' },
+    cat: { ja: 'となりの猫', en: 'Neighbor Cat', c: '#c9822e', g: 'cat' },
+    me: { ja: 'リマインダー', en: 'Reminders', c: '#e8a33d', g: 'me' },
+  }
+
+  // t = 誘惑の強さ（1〜3）。from は差出人（任意）。truth は正体（朝に明かす／開いた時に出る）
+  // min/max は出てよい時刻（22:00 からの分）
+  const SPAM = [
+    { id: 'cart', app: 'shop', t: 1, ja: ['カートに商品が残っています', '3年前に入れた加湿器だった'], en: ['Items are waiting in your cart', 'A humidifier you added 3 years ago'] },
+    { id: 'storage', app: 'sys', t: 1, ja: ['ストレージがいっぱいです', '同じ猫の写真が4,000枚'], en: ['Your storage is full', '4,000 photos of the same cat'] },
+    { id: 'news1', app: 'news', t: 1, ja: ['【速報】国内で大きな動き', 'パンダが寝返りをうった'], en: ['[BREAKING] Big move in Japan', 'A panda rolled over in its sleep'] },
+    { id: 'steps', app: 'sys', t: 1, ja: ['今日の歩数は312歩でした', 'ほめてはいなかった'], en: ['You walked 312 steps today', 'It was not a compliment'] },
+    { id: 'weather', app: 'news', t: 1, ja: ['明日は晴れ。テスト日和です', '本当にそれだけだった'], en: ['Sunny tomorrow. Perfect test weather', 'That was really all'] },
+    { id: 'coupon', app: 'flea', t: 1, ja: ['クーポンがまもなく消えます', '10円引きのクーポンだった'], en: ['Your coupon expires soon', 'It was 10 yen off'] },
+    { id: 'like', app: 'sns', t: 2, ja: ['あなたの投稿にいいねがつきました', '5年前の投稿。押したのは歯医者の公式'], en: ['Someone liked your post', 'A 5-year-old post. Liked by a dentist account'] },
+    { id: 'trend', app: 'sns', t: 2, ja: ['あなたの写真が話題になっています', '話題にしていたのは3人。全員業者'], en: ['Your photo is trending', 'Trending among 3 accounts. All spam'] },
+    { id: 'oshi', app: 'live', t: 2, ja: ['推しが今から生配信！', '推しの飼っている亀の生配信'], en: ['Your idol is LIVE now!', 'A live stream of the idol\'s pet turtle'] },
+    { id: 'lottery', app: 'lot', t: 2, ja: ['おめでとうございます！1等に当選', '1等は「もう1回引ける権利」'], en: ['Congrats! You won 1st prize', '1st prize: one more try'] },
+    { id: 'fortune', app: 'fortune', t: 2, ja: ['今夜、あなたの運命が動きます', '動くのは3分300円の課金'], en: ['Tonight your destiny moves', 'What moves: 300 yen for 3 minutes'] },
+    { id: 'dragon', app: 'game', t: 2, ja: ['ドラゴンが逃げ出しました！', '4年前にやめたゲームだった'], en: ['Your dragon escaped!', 'A game you quit 4 years ago'] },
+    { id: 'sale', app: 'shop', t: 2, ja: ['あと3分で終了！最大90%OFF', '90%引きなのは靴ひも1本'], en: ['3 minutes left! Up to 90% off', 'The 90% off item: one shoelace'] },
+    { id: 'gossip', app: 'bbs', t: 3, ja: ['あなたの悪口が書かれています', '書かれていたのは同姓同名の柴犬'], en: ['Someone is talking trash about you', 'About a shiba dog with your name'] },
+    { id: 'confess', app: 'love', t: 3, ja: ['ずっと好きでした。今から会えませんか', '育毛サロンのご案内だった'], en: ['I\'ve always liked you. Can we meet now?', 'An ad for a hair-growth salon'] },
+    { id: 'oshiname', app: 'live', t: 3, ja: ['推しがあなたの名前を呼びました', '同じ名前のリスナーが38人いた'], en: ['Your idol just said your name', '38 viewers share your name'] },
+    { id: 'ban', app: 'sys', t: 3, ja: ['【緊急】アカウントが停止されます', '入った覚えのないサービスだった'], en: ['[URGENT] Your account will be suspended', 'A service you never signed up for'] },
+    { id: 'answers', app: 'bbs', t: 3, ja: ['明日のテストの答え、流出してる', '流出していたのは去年の給食の献立'], en: ['Tomorrow\'s test answers leaked', 'It was last year\'s lunch menu'] },
+    { id: 'ex', app: 'love', t: 3, ja: ['元恋人があなたのプロフィールを見ました', '見たのは同じ市の知らない人'], en: ['Your ex viewed your profile', 'A stranger from your city did'] },
+  ]
+  // たまにだけ出る変なやつ
+  const RARE = [
+    { id: 'phone', app: 'sys', t: 2, ja: ['スマホ「さみしい」', 'スマホの気持ち（たぶん）'], en: ['Phone: "I\'m lonely"', 'How your phone feels (probably)'] },
+    { id: 'nyan', app: 'cat', t: 2, ja: ['にゃ', 'となりの猫が肉球で送った'], en: ['meow', 'The neighbor\'s cat typed it with a paw'] },
+    { id: 'future', app: 'me', t: 2, ja: ['テスト、どうだった？', '去年の自分が仕掛けたリマインダー'], en: ['So, how was the test?', 'A reminder set by you, last year'] },
+    { id: 'thanks', app: 'sys', t: 1, ja: ['通知をオンにしてくれてありがとう', '一度もオンにしていない'], en: ['Thanks for turning on notifications', 'You never did'] },
+  ]
+  // 偽物の「至急」。本物そっくりだが、トークからではない／名前に飾り／リンク付き
+  const FAKE = [
+    { id: 'fmom', app: 'shop', t: 3, from: { ja: 'お母さん（公式）', en: 'Mom (Official)' }, ja: ['【至急】今すぐタップして', '母の日ギフトの売り込み'], en: ['[URGENT] Tap right now', 'A Mother\'s Day gift ad'] },
+    { id: 'fken', app: 'fortune', t: 3, from: { ja: 'けんたの部屋', en: 'Kenta\'s Room' }, ja: ['至急！テスト範囲がわかる診断', '範囲占い。1回500円'], en: ['URGENT! Find your test range', 'Test-range fortune, 500 yen'] },
+    { id: 'fteach', app: 'game', t: 3, from: { ja: '【重要】担任より', en: '[IMPORTANT] Teacher' }, ja: ['明日の連絡。こちらから確認→', 'ドラゴン牧場のログインボーナス'], en: ['About tomorrow. Check here →', 'Dragon Ranch login bonus'] },
+    { id: 'fmom2', app: 'talk', t: 3, from: { ja: '母', en: 'Mom' }, link: true, ja: ['スマホ代が未納です tap.example/pay', '母のふりをした詐欺。母は「未納」と言わない'], en: ['Phone bill unpaid tap.example/pay', 'A scam pretending to be Mom'] },
+  ]
+  // 本物の「至急」。開けば得、無視すると朝に回収される。1晩に2つ
+  const REAL = [
+    { id: 'mom', app: 'talk', from: { ja: '母', en: 'Mom' }, bell: true,
+      ja: ['至急。かぎわすれた、あけて', 'ありがとう。夜食おいとくね', '母は玄関の前で2時間待った'],
+      en: ['urgent. forgot my key, open the door', 'thanks. left you a snack', 'Mom waited outside for 2 hours'], ok: 5, ng: -10 },
+    { id: 'ken', app: 'talk', from: { ja: 'けんた', en: 'Kenta' },
+      ja: ['至急。明日のテスト範囲、p.40からに変わったって', 'p.40から勉強しなおした', '範囲がちがった'],
+      en: ['urgent. test range changed, starts p.40', 'You switched to p.40', 'You studied the wrong pages'], ok: 15, ng: -15 },
+    { id: 'teach', app: 'talk', from: { ja: '担任', en: 'Teacher' },
+      ja: ['至急。明日は1限から体育館で', '体育館の場所を確かめた', '教室で1人で待っていた'],
+      en: ['urgent. 1st period is in the gym tomorrow', 'You checked where the gym is', 'You waited alone in the classroom'], ok: 5, ng: -10 },
+  ]
+
+  const T = {
+    ja: {
+      title1: 'その通知、', title2: '開くな', sub: '明日は期末テスト。\nスマホは鳴りやまない',
+      start: 'はじめる', how: '遊び方', lang: 'English', again: 'もう一回', save: '画像を保存', post: 'Xでポスト', back: 'もどる',
+      howH: '遊び方',
+      rules: [
+        '手が勝手にスマホへ伸びたら、その手をタップしてはたく。スマホに触ったら最後、通知を開いて時間が消える',
+        '消しゴム・コーヒー・ペンを取りに行く手ははたかない。使わせた方が勉強ははかどる',
+        '家族や友だちの本当の至急だけは、自分で通知をタップして開く。本物は「トーク」から来て、名前に【】や（公式）が無く、リンクも無い',
+      ],
+      howNote: '22時から朝6時まで。手が止まっている間だけノートが進む',
+      boot: '通知を切っています', credit: '音: Gravity Sound (CC BY 4.0) ほか CC0・パブリックドメイン',
+      privacy: 'プライバシー',
+      hintSlap: '伸びた手をタップ', hintFeint: '消しゴムなら通していい', hintReal: '本物の至急。タップして開く',
+      leftOn: '2:00 左手が言うことを聞かない',
+      alarm: 'やっと触っていい', alarmTap: 'スマホをタップ',
+      melt: '気づいたら', unread: '件の通知', unreadAll: '未読',
+      lock: '月', dateFmt: (d) => '11月' + d + '日（' + '火水'[d - 11] + '）',
+      voice: {
+        start: ['よし、やるぞ', '今夜は本気だ'],
+        slap: ['だめだ', 'いや見ない', '落ち着け', '危なかった', '見ないぞ'],
+        hurt: ['痛っ', 'ごめん手', 'それは無実'],
+        melt: ['1件だけのつもりが', 'なんで開いた', 'やってしまった'],
+        tempt3: ['え、気になる', 'うそでしょ', 'それはずるい'],
+        real: ['これは本物だ', '開けてよかった'],
+        fakeOpen: ['偽物だった…'],
+        cat: ['ねこ、ありがとう'],
+        bell: ['…チャイム？'],
+        left: ['左手まで…'],
+        coffee: ['目が覚めた'],
+        hl: ['ここ大事'], eraser: ['書きなおし'],
+      },
+      melted: '時間が溶けた',
+      openedReal: '開いた',
+      truthH: '昨夜の通知の正体', resultH: '期末テスト', subject: '数学', nameL: 'なまえ', you: 'がんばった人',
+      stat: (s) => 'はたいた ' + s.slaps + '回　開いた ' + s.opens + '回（' + s.meltTxt + '）　本物の至急 ' + s.realOk + '/' + s.realN,
+      meltTxt: (m) => m <= 0 ? '0分' : (m >= 60 ? Math.floor(m / 60) + '時間' : '') + (m % 60 ? (m % 60) + '分' : ''),
+      ranks: [
+        [100, '満点', 'スマホに勝った人'], [80, '優', 'ほぼ勝った人'], [60, '良', '赤点は回避した人'],
+        [40, '可', 'ギリギリの人'], [20, '赤点', '通知に負けた人'], [0, '追試', 'スマホが本体の人'],
+      ],
+      familyTitle: '家族に通知を切られた人',
+      comments: [
+        [95, '先生も見習います'], [80, 'よく耐えました'], [60, '途中で何かありましたね'],
+        [40, '前半はよく書けています'], [20, '後半のページが白い'], [0, '名前は書けています'],
+      ],
+      shareTxt: (sc, rk) => '「その通知、開くな」で期末テスト ' + sc + '点。' + rk,
+      tags: '#その通知開くな #バカゲー',
+      reveal: 'じつは全部',
+      snack: '夜食のおにぎり',
+      unreadN: (n) => '未読 ' + n + '件',
+      last: '残りの未読',
+    },
+    en: {
+      title1: 'Don\'t Open', title2: 'That', sub: 'Final exam tomorrow.\nYour phone won\'t shut up.',
+      start: 'Start', how: 'How to play', lang: '日本語', again: 'Again', save: 'Save image', post: 'Post on X', back: 'Back',
+      howH: 'How to play',
+      rules: [
+        'Tap a hand that reaches for the phone to slap it. If it touches the phone, you open it and lose time',
+        'Don\'t slap a hand going for the eraser, coffee or marker. Let it - they help you study',
+        'Only open a real emergency: it comes from "Talk", plain name, no link',
+      ],
+      howNote: '10 PM to 6 AM. The notebook fills only while your hand writes',
+      boot: 'Silencing notifications', credit: 'Sound: Gravity Sound (CC BY 4.0) and CC0 / public domain',
+      privacy: 'Privacy',
+      hintSlap: 'Tap the reaching hand', hintFeint: 'Eraser? Let it go', hintReal: 'A real one. Tap to open',
+      leftOn: '2 AM  Your left hand rebels',
+      alarm: 'Finally, touch it', alarmTap: 'Tap the phone',
+      melt: 'Suddenly it\'s', unread: ' notifications', unreadAll: 'Unread',
+      lock: '', dateFmt: (d) => (d === 11 ? 'Tue' : 'Wed') + ', Nov ' + d,
+      voice: {
+        start: ['Okay. Focus.', 'Tonight I study'],
+        slap: ['No.', 'Not looking', 'Calm down', 'Close one', 'Nope'],
+        hurt: ['Ow', 'Sorry, hand', 'It was innocent'],
+        melt: ['Just one, I said', 'Why did I open it', 'I did it again'],
+        tempt3: ['Wait, what?', 'No way', 'That\'s not fair'],
+        real: ['That one was real', 'Glad I opened it'],
+        fakeOpen: ['It was fake...'],
+        cat: ['Thank you, cat'],
+        bell: ['...the doorbell?'],
+        left: ['Even my left hand...'],
+        coffee: ['Wide awake'],
+        hl: ['This matters'], eraser: ['Rewrite'],
+      },
+      melted: 'Time melted',
+      openedReal: 'Opened',
+      truthH: 'What last night\'s notifications really were', resultH: 'Final Exam', subject: 'Math', nameL: 'Name', you: 'Tried hard',
+      stat: (s) => 'Slaps ' + s.slaps + '  Opened ' + s.opens + ' (' + s.meltTxt + ')  Real ones ' + s.realOk + '/' + s.realN,
+      meltTxt: (m) => m <= 0 ? '0 min' : (m >= 60 ? Math.floor(m / 60) + 'h ' : '') + (m % 60 ? (m % 60) + 'm' : ''),
+      ranks: [
+        [100, 'A+', 'Beat the phone'], [80, 'A', 'Almost beat it'], [60, 'B', 'Dodged failing'],
+        [40, 'C', 'Barely'], [20, 'F', 'Lost to notifications'], [0, 'Retake', 'The phone owns you'],
+      ],
+      familyTitle: 'Muted by your own family',
+      comments: [
+        [95, 'I should learn from you'], [80, 'Well resisted'], [60, 'Something happened midway'],
+        [40, 'The first half is good'], [20, 'The last pages are blank'], [0, 'At least you wrote your name'],
+      ],
+      shareTxt: (sc, rk) => 'Scored ' + sc + ' on the final in "Don\'t Open That". ' + rk,
+      tags: '#DontOpenThat #bakage',
+      reveal: 'It was all',
+      snack: 'Late-night rice ball',
+      unreadN: (n) => n + ' unread',
+      last: 'Still unread',
+    },
+  }
+  return { APPS, SPAM, RARE, FAKE, REAL, T }
+})()
